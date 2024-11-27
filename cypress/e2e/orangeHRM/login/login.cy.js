@@ -1,56 +1,68 @@
 /// <reference types="cypress" />
+import loginPage from "../../../pom/login/login.cy";
 
 describe('Login feature',() =>{
+    it('Ensure the OrangeHRM logo is displayed on the login page', () => {
+        cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
+        loginPage.logo().should('be.visible');
+    });
+    it('Displaying the text "Login" is displayed on the login page', () => {
+        cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
+        loginPage.loginText().should('have.text','Login');
+    });
     it('User login with valid credentials', () => {
         cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
-        cy.get('h5').contains('Login').should('have.text','Login');
-        cy.get('[name="username"]').type('Admin');
-        cy.get('[name="password"]').type('admin123');
+        loginPage.inputUsername().type('Admin');
+        loginPage.inputPassword().type('admin123');
         cy.intercept('GET','**/action-summary').as('actionSummarry');
         cy.intercept('GET','**/shortcuts').as('sorkat');
         cy.intercept('GET','**/subunit').as('subunit');
         cy.intercept('GET','**/locations').as('loc');
-        cy.get('[type="submit"]').click();
+        loginPage.buttonLogin().click();
         cy.wait('@actionSummarry');
         cy.wait('@sorkat');
         cy.wait('@subunit');
         cy.wait('@loc');
-        cy.get('h6').contains('Dashboard').should('have.text','Dashboard');
+        loginPage.dashboard().should('have.text','Dashboard');
     });
     it('should display an "Invalid credentials" error when an invalid username is entered', () => {
         cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login'); 
-        cy.get('[name="username"]').type('invalidUser'); 
-        cy.get('[name="password"]').type('admin123');  
-        cy.get('[type="submit"]').click();
-        cy.get('[role="alert"]').should('be.visible').and('contain.text', 'Invalid credentials');
+        loginPage.inputUsername().type('invalidUser'); 
+        loginPage.inputPassword().type('admin123');  
+        loginPage.buttonLogin().click();
+        //error message
+        loginPage.alert().should('be.visible').and('contain.text', 'Invalid credentials');
     });
     it('should display an "Invalid credentials" error when an invalid password is entered', () => {
         cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
-        cy.get('[name="username"]').type('Admin');
-        cy.get('[name="password"]').type('wrongPassword123');  
-        cy.get('[type="submit"]').click();
-        cy.get('[role="alert"]').should('be.visible').and('contain.text', 'Invalid credentials');
+        loginPage.inputUsername().type('Admin');
+        loginPage.inputPassword().type('wrongPassword123');  
+        loginPage.buttonLogin().click();
+        //error message
+        loginPage.alert().should('be.visible').and('contain.text', 'Invalid credentials');
     });
     it('should displays the error message "Required" if the username field is empty', () => {
         cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
-        cy.get('[name="username"]').clear();
-        cy.get('[name="password"]').type('admin123');
-        cy.get('[type="submit"]').click();
-        cy.get('span').contains('Required', { timeout: 8000 }).should('have.text', 'Required');
+        loginPage.inputUsername().clear();
+        loginPage.inputPassword().type('admin123');
+        loginPage.buttonLogin().click();
+        //error message
+        loginPage.required().should('have.text', 'Required');
     });
     it('should displays error message "Required" if password field is empty', () => {
         cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
-        cy.get('[name="username"]').type('Admin');
-        cy.get('[name="password"]').clear();
-        cy.get('[type="submit"]').click();
-        cy.get('span').contains('Required', { timeout: 8000 }).should('have.text', 'Required'); 
+        loginPage.inputUsername().type('Admin');
+        loginPage.inputPassword().clear();
+        loginPage.buttonLogin().click();
+        //error message
+        loginPage.required().should('have.text', 'Required'); 
     });
     it('displays the error message "Required" if the username and password fields are empty', () => {
         cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
-        cy.get('[name="username"]').clear();
-        cy.get('[name="password"]').clear();
-        cy.get('[type="submit"]').click(); 
-        cy.get('span').contains('Required').should('have.text', 'Required');
-        cy.get('span').contains('Required', { timeout: 8000 }).should('have.text', 'Required');
+        loginPage.inputUsername().clear();
+        loginPage.inputPassword().clear();
+        loginPage.buttonLogin().click();
+        //error message
+        loginPage.required().should('have.text', 'Required');
     });
 })
