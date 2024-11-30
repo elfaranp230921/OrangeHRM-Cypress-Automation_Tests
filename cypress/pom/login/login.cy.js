@@ -1,4 +1,7 @@
 export default class loginPage{
+    static visitLoginPage(){
+        return cy.visit('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
+    }
     static logo(){
         return cy.get('[alt="company-branding"]');
     }
@@ -20,7 +23,7 @@ export default class loginPage{
     static alert(){
         return cy.get('[role="alert"]');
     }
-    static required(){
-        return cy.get('span').contains('Required', { timeout: 8000 });
+    static EmptyColomn(){
+        return cy.get('span').contains('Required', { timeout: 5000 });
     }
 }
